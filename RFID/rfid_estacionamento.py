@@ -9,27 +9,25 @@ import spidev
 # Configurações de hardware
 GPIO.setmode(GPIO.BOARD)
 BUZZER = 38
+CS_ENTRADA = 8  # CS do leitor de entrada
+CS_SAIDA = 22   # CS do leitor de saída
 GPIO.setup(BUZZER, GPIO.OUT)
+GPIO.setup(CS_ENTRADA, GPIO.OUT)
+GPIO.setup(CS_SAIDA, GPIO.OUT)
 
-# Função modificada para inicializar leitores RFID com pinos CS específicos
-class SimpleMFRC522Custom(SimpleMFRC522):
-    def __init__(self, cs_pin):
-        self.spi = spidev.SpiDev()
-        self.spi.open(0, cs_pin)  # Abra o SPI no pino CS correspondente
-        self.spi.max_speed_hz = 1000000
-        super().__init__()
+# Configuração da SPI e inicialização do leitor
+spi = spidev.SpiDev()
+spi.open(0, 0)  # Canal SPI 0, dispositivo 0
+spi.max_speed_hz = 1000000
+leitorRFID = SimpleMFRC522()
 
-# Iniciar os leitores RFID
-leitorEntrada = SimpleMFRC522Custom(cs_pin=8)  # Leitor de Entrada (CS 0)
-leitorSaida = SimpleMFRC522Custom(cs_pin=22)    # Leitor de Saída (CS 1)
-
-# URL da API (ajuste para o endereço correto do servidor)
+# URL da API
 URL_API = "http://10.1.24.62:5000"
 
 # Funções para o buzzer
 def tocar_buzzer(frequencia, duracao):
     p = GPIO.PWM(BUZZER, frequencia)
-    p.start(50)  # Duty cycle de 50%
+    p.start(50)
     sleep(duracao)
     p.stop()
 
@@ -48,10 +46,29 @@ def finalizar_programa(signal, frame):
     GPIO.cleanup()
     sys.exit(0)
 
-# Captura o sinal de interrupção (CTRL+C)
 signal.signal(signal.SIGINT, finalizar_programa)
 
-# Função para manipular a entrada de veículo
+# Função para leitura com alternância de leitores
+def ler_tag(cs_pin):
+    # Ativar CS do leitor desejado
+    GPIO.output(cs_pin, GPIO.LOW)
+    sleep(0.1)  # Pequeno delay para estabilizar
+
+    # Leitura
+    try:
+        tag_id, _ = leitorRFID.read()
+        buzzer_leitura_feita()
+        return int(tag_id)
+    except Exception as e:
+        print(f"Erro ao ler o RFID: {e}")
+        buzzer_erro()
+    finally:
+        # Desativar CS após leitura
+        GPIO.output(cs_pin, GPIO.HIGH)
+
+    return None
+
+# Funções de processamento para entrada e saída
 def processar_entrada(tag):
     response = requests.get(f"{URL_API}/carros/{tag}")
     if response.status_code == 200:
@@ -72,7 +89,6 @@ def processar_entrada(tag):
         print("Erro ao buscar dados do carro.")
         buzzer_erro()
 
-# Função para manipular a saída de veículo
 def processar_saida(tag):
     response = requests.get(f"{URL_API}/carros/{tag}")
     if response.status_code == 200:
@@ -97,18 +113,17 @@ def processar_saida(tag):
 try:
     while True:
         print("Aguardando leitura na entrada...")
-        tagEntrada, _ = leitorEntrada.read()
-        tagEntrada = int(tagEntrada)
-        buzzer_leitura_feita()
-        processar_entrada(tagEntrada)
+        tagEntrada = ler_tag(CS_ENTRADA)
+        if tagEntrada:
+            processar_entrada(tagEntrada)
 
         print("Aguardando leitura na saída...")
-        tagSaida, _ = leitorSaida.read()
-        tagSaida = int(tagSaida)
-        buzzer_leitura_feita()
-        processar_saida(tagSaida)
+        tagSaida = ler_tag(CS_SAIDA)
+        if tagSaida:
+            processar_saida(tagSaida)
 
         sleep(1)
 
 finally:
     GPIO.cleanup()
+
