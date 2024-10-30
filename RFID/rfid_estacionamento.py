@@ -11,9 +11,20 @@ GPIO.setmode(GPIO.BOARD)
 BUZZER = 38
 CS_ENTRADA = 8  # CS do leitor de entrada
 CS_SAIDA = 22   # CS do leitor de saída
+SERVO_ENTRADA_PIN = 10  # Pino do servo da cancela de entrada
+SERVO_SAIDA_PIN = 12    # Pino do servo da cancela de saída
+
 GPIO.setup(BUZZER, GPIO.OUT)
 GPIO.setup(CS_ENTRADA, GPIO.OUT)
 GPIO.setup(CS_SAIDA, GPIO.OUT)
+
+# Configuração do PWM para os servos
+GPIO.setup(SERVO_ENTRADA_PIN, GPIO.OUT)
+GPIO.setup(SERVO_SAIDA_PIN, GPIO.OUT)
+servoEntrada = GPIO.PWM(SERVO_ENTRADA_PIN, 50)  # Frequência de 50Hz
+servoSaida = GPIO.PWM(SERVO_SAIDA_PIN, 50)      # Frequência de 50Hz
+servoEntrada.start(0)  # Inicializa em 0 graus
+servoSaida.start(0)    # Inicializa em 0 graus
 
 # Configuração da SPI e inicialização do leitor
 spi = spidev.SpiDev()
@@ -40,9 +51,18 @@ def buzzer_erro():
 def buzzer_sucesso():
     tocar_buzzer(1000, 0.5)
 
+# Função para abrir e fechar a cancela
+def abrir_cancela(servo):
+    servo.ChangeDutyCycle(7)  # Ajuste para abrir (aproximadamente 90 graus)
+    sleep(5)  # Aguarda 5 segundos para fechar
+    servo.ChangeDutyCycle(0)  # Para o PWM (cancela fecha)
+    sleep(1)  # Aguarda um segundo antes de permitir o próximo movimento
+
 # Função para finalizar o programa
 def finalizar_programa(signal, frame):
     print("\nFinalizando o programa...")
+    servoEntrada.stop()  # Para o PWM do servo de entrada
+    servoSaida.stop()    # Para o PWM do servo de saída
     GPIO.cleanup()
     sys.exit(0)
 
@@ -76,6 +96,7 @@ def processar_entrada(tag):
         placa = carro.get('placa')
         if placa:
             buzzer_sucesso()
+            abrir_cancela(servoEntrada)  # Abre a cancela de entrada
             response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag, 'placa': placa})
             if response.status_code == 200:
                 print("Veículo registrado com sucesso na entrada.")
@@ -96,6 +117,7 @@ def processar_saida(tag):
         placa = carro.get('placa')
         if placa:
             buzzer_sucesso()
+            abrir_cancela(servoSaida)  # Abre a cancela de saída
             response = requests.post(f"{URL_API}/sair", json={'carro_id': tag, 'placa': placa})
             if response.status_code == 200:
                 print("Saída registrada com sucesso.")
@@ -126,4 +148,5 @@ try:
 
 finally:
     GPIO.cleanup()
+
 
