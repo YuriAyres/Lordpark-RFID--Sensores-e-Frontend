@@ -127,7 +127,7 @@ def processar_entrada(tag):
             if reserva == 'reservado':
                 buzzer_sucesso_entrada()  # Sucesso na entrada
                 abrir_cancela(servoEntrada)  # Abre a cancela de entrada
-                response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag, 'placa': placa})
+                response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag})
                 if response.status_code == 200:
                     print("Veículo registrado com sucesso na entrada.")
                 else:
@@ -148,11 +148,10 @@ def processar_saida(tag):
     if response.status_code == 200:
         carro = response.json()
         placa = carro.get('placa')
-        reserva = carro.get('reserva')
         if placa:
             buzzer_sucesso_saida()  # Sucesso na saída
             abrir_cancela(servoSaida)  # Abre a cancela de saída
-            response = requests.post(f"{URL_API}/sair", json={'carro_id': tag, 'placa': placa, 'reserva': ''})
+            response = requests.post(f"{URL_API}/sair", json={'carro_id': tag})
             if response.status_code == 200:
                 print("Saída registrada com sucesso.")
             else:
