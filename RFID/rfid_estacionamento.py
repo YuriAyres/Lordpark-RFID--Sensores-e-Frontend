@@ -8,13 +8,21 @@ import spidev
 
 # Configurações de hardware
 GPIO.setmode(GPIO.BOARD)
-BUZZER = 38
+BUZZER_ENTRADA = 38
+BUZZER_SAIDA = 40  # Novo buzzer para saída
 CS_ENTRADA = 8  # CS do leitor de entrada
 CS_SAIDA = 22   # CS do leitor de saída
 SERVO_ENTRADA_PIN = 10  # Pino do servo da cancela de entrada
 SERVO_SAIDA_PIN = 12    # Pino do servo da cancela de saída
 
-GPIO.setup(BUZZER, GPIO.OUT)
+# Pinos dos LEDs
+LED_VERMELHO_ENTRADA = 32  # LED vermelho para entrada
+LED_VERDE_ENTRADA = 36      # LED verde para entrada
+LED_VERMELHO_SAIDA = 33     # LED vermelho para saída
+LED_VERDE_SAIDA = 35        # LED verde para saída
+
+GPIO.setup(BUZZER_ENTRADA, GPIO.OUT)
+GPIO.setup(BUZZER_SAIDA, GPIO.OUT)
 GPIO.setup(CS_ENTRADA, GPIO.OUT)
 GPIO.setup(CS_SAIDA, GPIO.OUT)
 
@@ -35,21 +43,41 @@ leitorRFID = SimpleMFRC522()
 # URL da API
 URL_API = "http://10.1.24.62:5000"
 
+# Configuração dos LEDs
+GPIO.setup(LED_VERMELHO_ENTRADA, GPIO.OUT)
+GPIO.setup(LED_VERDE_ENTRADA, GPIO.OUT)
+GPIO.setup(LED_VERMELHO_SAIDA, GPIO.OUT)
+GPIO.setup(LED_VERDE_SAIDA, GPIO.OUT)
+
 # Funções para o buzzer
-def tocar_buzzer(frequencia, duracao):
-    p = GPIO.PWM(BUZZER, frequencia)
+def tocar_buzzer(frequencia, duracao, buzzer):
+    p = GPIO.PWM(buzzer, frequencia)
     p.start(50)
     sleep(duracao)
     p.stop()
 
 def buzzer_leitura_feita():
-    tocar_buzzer(500, 0.5)
+    tocar_buzzer(500, 0.5, BUZZER_ENTRADA)
 
-def buzzer_erro():
-    tocar_buzzer(200, 0.5)
+def buzzer_erro_entrada():
+    tocar_buzzer(200, 0.5, BUZZER_ENTRADA)
+    GPIO.output(LED_VERMELHO_ENTRADA, GPIO.HIGH)  # Liga LED vermelho
+    GPIO.output(LED_VERDE_ENTRADA, GPIO.LOW)      # Desliga LED verde
 
-def buzzer_sucesso():
-    tocar_buzzer(1000, 0.5)
+def buzzer_sucesso_entrada():
+    tocar_buzzer(1000, 0.5, BUZZER_ENTRADA)
+    GPIO.output(LED_VERMELHO_ENTRADA, GPIO.LOW)   # Desliga LED vermelho
+    GPIO.output(LED_VERDE_ENTRADA, GPIO.HIGH)     # Liga LED verde
+
+def buzzer_erro_saida():
+    tocar_buzzer(200, 0.5, BUZZER_SAIDA)
+    GPIO.output(LED_VERMELHO_SAIDA, GPIO.HIGH)    # Liga LED vermelho
+    GPIO.output(LED_VERDE_SAIDA, GPIO.LOW)        # Desliga LED verde
+
+def buzzer_sucesso_saida():
+    tocar_buzzer(1000, 0.5, BUZZER_SAIDA)
+    GPIO.output(LED_VERMELHO_SAIDA, GPIO.LOW)     # Desliga LED vermelho
+    GPIO.output(LED_VERDE_SAIDA, GPIO.HIGH)       # Liga LED verde
 
 # Função para abrir e fechar a cancela
 def abrir_cancela(servo):
@@ -81,7 +109,7 @@ def ler_tag(cs_pin):
         return int(tag_id)
     except Exception as e:
         print(f"Erro ao ler o RFID: {e}")
-        buzzer_erro()
+        buzzer_erro_entrada()  # Use o buzzer e LED de erro para entrada
     finally:
         # Desativar CS após leitura
         GPIO.output(cs_pin, GPIO.HIGH)
@@ -95,20 +123,20 @@ def processar_entrada(tag):
         carro = response.json()
         placa = carro.get('placa')
         if placa:
-            buzzer_sucesso()
+            buzzer_sucesso_entrada()  # Sucesso na entrada
             abrir_cancela(servoEntrada)  # Abre a cancela de entrada
             response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag, 'placa': placa})
             if response.status_code == 200:
                 print("Veículo registrado com sucesso na entrada.")
             else:
                 print("Erro ao registrar entrada.")
-                buzzer_erro()
+                buzzer_erro_entrada()
         else:
             print("ID não reconhecido.")
-            buzzer_erro()
+            buzzer_erro_entrada()
     else:
         print("Erro ao buscar dados do carro.")
-        buzzer_erro()
+        buzzer_erro_entrada()
 
 def processar_saida(tag):
     response = requests.get(f"{URL_API}/carros/{tag}")
@@ -116,20 +144,20 @@ def processar_saida(tag):
         carro = response.json()
         placa = carro.get('placa')
         if placa:
-            buzzer_sucesso()
+            buzzer_sucesso_saida()  # Sucesso na saída
             abrir_cancela(servoSaida)  # Abre a cancela de saída
             response = requests.post(f"{URL_API}/sair", json={'carro_id': tag, 'placa': placa})
             if response.status_code == 200:
                 print("Saída registrada com sucesso.")
             else:
                 print("Erro ao registrar saída.")
-                buzzer_erro()
+                buzzer_erro_saida()
         else:
             print("ID não reconhecido.")
-            buzzer_erro()
+            buzzer_erro_saida()
     else:
         print("Erro ao buscar dados do carro.")
-        buzzer_erro()
+        buzzer_erro_saida()
 
 # Loop principal
 try:
@@ -148,5 +176,4 @@ try:
 
 finally:
     GPIO.cleanup()
-
 
