@@ -38,12 +38,13 @@ void controlarLEDs(int indiceSensor, bool presencaDetectada) {
   }
 }
 
-void enviarDadosParaAPI(int sensoresAtivos) {
-  // Aqui você deve implementar a lógica para enviar dados para sua API.
-  // Exemplo:
-  Serial.print("Sensores Ativos: ");
-  Serial.println(sensoresAtivos);
+void enviarDadosParaPython(int sensoresAtivos) {
+  int sensoresInativos = TOTAL_SENSORES - sensoresAtivos;
+  Serial.println(sensoresInativos);
 }
+
+
+
 
 void loop() {
   int sensoresAtivosAnterior = sensoresAtivos; // Guarda o valor anterior
@@ -72,10 +73,9 @@ void loop() {
     controlarLEDs(i, presencaDetectada);
   }
 
-  // Envia os dados para a API sempre que houver uma alteração
   if (sensoresAtivos != sensoresAtivosAnterior) {
-    enviarDadosParaAPI(TOTAL_SENSORES - sensoresAtivos);
-  }
+  enviarDadosParaPython(sensoresAtivos);
+}
 
   delay(5000); // Atraso antes da próxima leitura
 }
