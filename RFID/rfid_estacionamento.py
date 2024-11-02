@@ -6,6 +6,7 @@ import sys
 import requests
 import spidev
 import threading
+from mfrc522_custom import MFRC522Custom
 
 # Configurações de hardware
 GPIO.setmode(GPIO.BOARD)
@@ -37,19 +38,8 @@ servoSaida = GPIO.PWM(SERVO_SAIDA_PIN, 50)      # Frequência de 50Hz
 servoEntrada.start(0)  # Inicializa em 0 graus
 servoSaida.start(0)    # Inicializa em 0 graus
 
-# Configuração da SPI para o leitor de entrada e saída
-spi_entrada = spidev.SpiDev()
-spi_saida = spidev.SpiDev()
-
-# Abre o SPI 0,0 para o leitor de entrada
-spi_entrada.open(0, 0)
-spi_entrada.max_speed_hz = 1000000
-leitorRFID_entrada = SimpleMFRC522()
-
-# Abre o SPI 1,0 para o leitor de saída
-spi_saida.open(1, 0)
-spi_saida.max_speed_hz = 1000000
-leitorRFID_saida = SimpleMFRC522()
+leitorRFID_entrada = MFRC522Custom(bus=0, device=0)
+leitorRFID_saida = MFRC522Custom(bus=1, device=0)
 
 # URL da API
 URL_API = "http://10.1.24.62:5000"
