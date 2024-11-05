@@ -4,42 +4,26 @@ from time import sleep
 import signal
 import sys
 import requests
-import spidev
-import threading
-from mfrc522_custom import MFRC522Custom
 
 # Configurações de hardware
 GPIO.setmode(GPIO.BOARD)
-BUZZER_ENTRADA = 13
-BUZZER_SAIDA = 37  
-CS_ENTRADA = 24  
-CS_SAIDA = 12   
-SERVO_ENTRADA_PIN = 32 
-SERVO_SAIDA_PIN = 33
-LED_VERMELHO_ENTRADA = 16  
-LED_VERDE_ENTRADA = 18    
-LED_VERMELHO_SAIDA = 29   
-LED_VERDE_SAIDA = 31
+BUZZER_SAIDA = 13
+CS_SAIDA = 24  
+SERVO_SAIDA_PIN = 32 
+LED_VERMELHO_SAIDA = 16  
+LED_VERDE_SAIDA = 18
 
-GPIO.setup(BUZZER_ENTRADA, GPIO.OUT)
 GPIO.setup(BUZZER_SAIDA, GPIO.OUT)
-GPIO.setup(CS_ENTRADA, GPIO.OUT)
 GPIO.setup(CS_SAIDA, GPIO.OUT)
-GPIO.setup(SERVO_ENTRADA_PIN, GPIO.OUT)
 GPIO.setup(SERVO_SAIDA_PIN, GPIO.OUT)
-GPIO.setup(LED_VERMELHO_ENTRADA, GPIO.OUT)
-GPIO.setup(LED_VERDE_ENTRADA, GPIO.OUT)
 GPIO.setup(LED_VERMELHO_SAIDA, GPIO.OUT)
 GPIO.setup(LED_VERDE_SAIDA, GPIO.OUT)
 
 # Configuração do PWM para os servos
-servoEntrada = GPIO.PWM(SERVO_ENTRADA_PIN, 50)  # Frequência de 50Hz
-servoSaida = GPIO.PWM(SERVO_SAIDA_PIN, 50)      # Frequência de 50Hz
-servoEntrada.start(0)  # Inicializa em 0 graus
-servoSaida.start(0)    # Inicializa em 0 graus
+servoSaida = GPIO.PWM(SERVO_SAIDA_PIN, 50)  # Frequência de 50Hz
+servoSaida.start(0)  # Inicializa em 0 graus
 
-leitorRFID_entrada = MFRC522Custom(bus=0, device=0)
-leitorRFID_saida = MFRC522Custom(bus=1, device=0)
+leitorRFID_saida = SimpleMFRC522()
 
 # URL da API
 URL_API = "http://10.1.24.62:5000"
@@ -71,7 +55,6 @@ def abrir_cancela(servo):
 # Função para finalizar o programa
 def finalizar_programa(signal, frame):
     print("\nFinalizando o programa...")
-    servoEntrada.stop()  # Para o PWM do servo de entrada
     servoSaida.stop()    # Para o PWM do servo de saída
     GPIO.cleanup()
     sys.exit(0)
@@ -94,33 +77,6 @@ def ler_tag(cs_pin, leitor):
 
     return None
 
-# Funções de processamento para entrada e saída
-def processar_entrada(tag):
-    response = requests.get(f"{URL_API}/carros/{tag}")
-    if response.status_code == 200:
-        carro = response.json()
-        placa = carro.get('placa')
-        reserva = carro.get('reserva')
-        if placa:
-            if reserva == 'reservado':
-                buzzer_sucesso(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA, LED_VERDE_ENTRADA)  # Sucesso na entrada
-                abrir_cancela(servoEntrada)  # Abre a cancela de entrada
-                response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag})
-                if response.status_code == 200:
-                    print("Veículo registrado com sucesso na entrada.")
-                else:
-                    print("Erro ao registrar entrada.")
-                    buzzer_erro(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA, LED_VERDE_ENTRADA)
-            else:
-                print("Erro ao registrar entrada, veículo não tem reserva.")
-                buzzer_erro(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA, LED_VERDE_ENTRADA)
-        else:
-            print("ID não reconhecido.")
-            buzzer_erro(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA, LED_VERDE_ENTRADA)
-    else:
-        print("Erro ao buscar dados do carro.")
-        buzzer_erro(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA, LED_VERDE_ENTRADA)
-
 def processar_saida(tag):
     response = requests.get(f"{URL_API}/carros/{tag}")
     if response.status_code == 200:
@@ -142,15 +98,8 @@ def processar_saida(tag):
         print("Erro ao buscar dados do carro.")
         buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA, LED_VERDE_SAIDA)
 
-def monitorar_entrada():
-    while True:
-        print("Aguardando leitura na entrada...")
-        tagEntrada = ler_tag(CS_ENTRADA, leitorRFID_entrada)
-        if tagEntrada:
-            processar_entrada(tagEntrada)
-        sleep(1)
-
-def monitorar_saida():
+# Loop principal
+try:
     while True:
         print("Aguardando leitura na saída...")
         tagSaida = ler_tag(CS_SAIDA, leitorRFID_saida)
@@ -158,26 +107,7 @@ def monitorar_saida():
             processar_saida(tagSaida)
         sleep(1)
 
-# Loop principal
-try:
-    # Iniciando threads para monitorar entrada e saída simultaneamente
-    thread_entrada = threading.Thread(target=monitorar_entrada)
-    thread_saida = threading.Thread(target=monitorar_saida)
-
-    # Tornando as threads daemon para que finalizem quando o programa principal terminar
-    thread_entrada.daemon = True
-    thread_saida.daemon = True
-
-    # Iniciando as threads
-    thread_entrada.start()
-    thread_saida.start()
-
-    # Mantém o programa principal em execução enquanto as threads funcionam
-    while True:
-        sleep(0.1)
-
         
 
 finally:
     GPIO.cleanup()
-
