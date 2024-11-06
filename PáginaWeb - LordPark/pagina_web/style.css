@@ -120,7 +120,7 @@ tbody tr:hover {
 }
 
 /* Estilo do botão de logoff */
-#logoff-button {
+.logoff-button {
     position: absolute;
     top: 20px; 
     right: 20px; 
@@ -133,6 +133,6 @@ tbody tr:hover {
     transition: background-color 0.3s; 
 }
 
-#logoff-button:hover {
+.logoff-button:hover {
     background-color: #444; 
 }

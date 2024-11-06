@@ -1,3 +1,6 @@
+// ip_teste = 192.168.18.31
+// ip_atitus = 10.1.24.62
+ipApi = "192.168.18.31";
 // Verifica se o usuário está logado ao carregar a página
 document.addEventListener('DOMContentLoaded', function() {
     if (localStorage.getItem('loggedIn') === 'true') {
@@ -27,10 +30,10 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('isAdmin', 'true');
         document.getElementById('login-container').style.display = 'none';
+        document.getElementById('admin-container').style.display = 'block';
         carregarCarrosAdmin();
-    } else if ((username === 'user1' && password === 'senha123') || 
-               (username === 'user2' && password === 'senha456') || 
-               (username === 'user3' && password === 'senha789')) {
+    } else if ((username === 'Cristiano ronaldo' && password === 'senha123') || 
+               (username === 'Mauricio Hugo' && password === 'senha456')) {
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('isAdmin', 'false');
         localStorage.setItem('username', username);  // Armazena o username para filtrar carros
@@ -60,7 +63,7 @@ document.querySelectorAll("#logoff-button, #logoff-button-user").forEach(button 
 async function carregarCarrosUsuario() {
     const username = localStorage.getItem('username');
     try {
-        const response = await fetch(`http://10.1.24.62:5000/login/${username}`);
+        const response = await fetch(`http://${ipApi}:5000/login/${username}`);
         if (!response.ok) {
             throw new Error('Erro ao buscar carros do usuário');
         }
@@ -86,7 +89,7 @@ async function carregarCarrosUsuario() {
 // Função para carregar os carros do administrador
 async function carregarCarrosAdmin() {
     try {
-        const response = await fetch('http://10.1.24.62:5000/carros');
+        const response = await fetch(`http://${ipApi}:5000/carros`);
         if (!response.ok) {
             throw new Error('Erro ao buscar todos os carros');
         }
