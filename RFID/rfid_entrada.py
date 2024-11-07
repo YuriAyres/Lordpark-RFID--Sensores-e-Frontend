@@ -4,6 +4,8 @@ from time import sleep
 import signal
 import sys
 import requests
+import pika
+import datetime
 
 # Configurações de hardware
 GPIO.setmode(GPIO.BOARD)
@@ -27,6 +29,16 @@ leitorRFID_entrada = SimpleMFRC522()
 
 # URL da API
 URL_API = "http://10.1.24.62:5000"
+
+def enviar_mensagem_rabbitmq(placa, data_hora_entrada):
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    channel.queue_declare(queue='entrada_veiculos')
+
+    mensagem = f"{placa};{data_hora_entrada}"
+    channel.basic_publish(exchange='', routing_key='entrada_veiculos', body=mensagem)
+    print(f"Mensagem enviada para RabbitMQ: {mensagem}")
+    connection.close()
 
 # Funções para o buzzer
 def tocar_buzzer(frequencia, duracao, buzzer):
@@ -88,6 +100,11 @@ def processar_entrada(tag):
             if reserva == 'reservado':
                 buzzer_sucesso(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA, LED_VERDE_ENTRADA)  # Sucesso na entrada
                 abrir_cancela(servoEntrada)  # Abre a cancela de entrada
+
+                 # Enviar dados para RabbitMQ
+                data_hora_entrada = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                enviar_mensagem_rabbitmq(placa, data_hora_entrada)
+                
                 response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag})
                 if response.status_code == 200:
                     print("Veículo registrado com sucesso na entrada.")
