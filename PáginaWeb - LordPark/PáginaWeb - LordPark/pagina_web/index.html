@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Notebooks</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Container de Login -->
+    <div id="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" required>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <p id="login-error" style="color:red; display:none;">Usuário ou senha incorretos.</p>
+    </div>
+
+    <!-- Container do Administrador -->
+    <div id="admin-container" style="display:none;">
+        <button class="logoff-button" id="logoff-button">Logoff</button>
+        <h2>Controle de Notebooks - Administrador</h2>
+        <table class="table" align="center">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Nome</th>
+                    <th>Status</th>
+                    <th>Reserva</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dados para o administrador -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Container do Usuário Padrão -->
+    <div id="user-container" style="display:none;">
+        <button class="logoff-button" id="logoff-button-user">Logoff</button>
+        <h2>Controle de Notebooks - Usuário</h2>
+
+        <!-- Seleção de carro para reserva -->
+        <div id="car-selection">
+            <label for="car-select">Selecione a placa para reservar:</label>
+            <select id="car-select"></select>
+            <button id="reserve-button">Reservar</button>
+            <p id="reserve-message" style="color:green; display:none;">Reserva realizada com sucesso!</p>
+        </div>
+
+        <table class="table" align="center">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Modelo</th>
+                    <th>Status</th>
+                    <th>Reserva</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dados para o usuário padrão -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
