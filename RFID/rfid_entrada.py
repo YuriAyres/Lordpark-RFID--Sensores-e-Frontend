@@ -31,7 +31,7 @@ leitorRFID_entrada = SimpleMFRC522()
 URL_API = "http://10.1.24.62:5000"
 
 def enviar_mensagem_rabbitmq(placa, data_hora_entrada):
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    connection = pika.BlockingConnection(pika.ConnectionParameters('10.1.24.62'))
     channel = connection.channel()
     channel.queue_declare(queue='estacionamento')
 
