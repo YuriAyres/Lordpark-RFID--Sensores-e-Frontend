@@ -1,12 +1,10 @@
 // ip_teste = 192.168.18.31
 // ip_atitus = 10.1.24.62
 ipApi = "10.1.24.62";
-
 // Verifica se o usuário está logado ao carregar a página
 document.addEventListener('DOMContentLoaded', function() {
-    const isAdmin = localStorage.getItem('isAdmin') === 'true';
-    
     if (localStorage.getItem('loggedIn') === 'true') {
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
         document.getElementById('login-container').style.display = 'none';
 
         if (isAdmin) {
@@ -15,9 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             document.getElementById('user-container').style.display = 'block';
             carregarCarrosUsuario();
-
-            // Mostra a seleção de placas apenas para usuários padrão
-            document.getElementById('car-selection').style.display = 'block';
         }
     } else {
         document.getElementById('login-container').style.display = 'block';
@@ -63,7 +58,8 @@ document.querySelectorAll("#logoff-button, #logoff-button-user").forEach(button 
     });
 });
 
-// Função para carregar os carros do usuário logado e preencher o select
+
+// Função para carregar os carros do usuário logado
 async function carregarCarrosUsuario() {
     const username = localStorage.getItem('username');
     try {
@@ -74,9 +70,6 @@ async function carregarCarrosUsuario() {
         const carros = await response.json();
         const tabela = document.querySelector('#user-container .table tbody');
         tabela.innerHTML = '';
-        
-        const carSelect = document.getElementById('car-select');
-        carSelect.innerHTML = ''; // Limpa as opções anteriores
 
         carros.forEach(carro => {
             const row = document.createElement('tr');
@@ -87,19 +80,37 @@ async function carregarCarrosUsuario() {
                 <td>${carro.reserva}</td>
             `;
             tabela.appendChild(row);
-
-            // Adiciona a placa ao select
-            const option = document.createElement('option');
-            option.value = carro.placa;
-            option.textContent = carro.placa;
-            carSelect.appendChild(option);
         });
     } catch (error) {
         console.error('Erro ao carregar carros do usuário:', error);
     }
 }
 
-// Função para enviar a solicitação de reserva
+// Função para carregar os carros do administrador
+async function carregarCarrosAdmin() {
+    try {
+        const response = await fetch(`http://${ipApi}:5000/carros`);
+        if (!response.ok) {
+            throw new Error('Erro ao buscar todos os carros');
+        }
+        const carros = await response.json();
+        const tabela = document.querySelector('#admin-container .table tbody');
+        tabela.innerHTML = '';
+
+        carros.forEach(carro => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${carro.placa}</td>
+                <td>${carro.nome}</td>
+                <td>${carro.status}</td>
+                <td>${carro.reserva}</td>
+            `;
+            tabela.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar todos os carros:', error);
+    }
+    // Função para enviar a solicitação de reserva
 async function reservarCarro() {
     const placa = document.getElementById('car-select').value;
     try {
@@ -128,5 +139,23 @@ async function reservarCarro() {
     }
 }
 
+}
+
 // Adiciona o evento ao botão de reserva
 document.getElementById('reserve-button').addEventListener('click', reservarCarro);
+async function carregarVagasDisponiveis() {
+    try {
+        const response = await fetch(`http://${ipApi}:5000/vagas`);
+        if (!response.ok) {
+            throw new Error('Erro ao buscar o número de vagas disponíveis');
+        }
+        const data = await response.json();
+        const vagas = data.sensores_inativos;
+        document.getElementById('vagas-disponiveis').textContent = vagas
+            ? `Existem ${vagas} vagas disponíveis.`
+            : 'Número de vagas ainda não atualizado.';
+    } catch (error) {
+        console.error('Erro ao carregar vagas:', error);
+        document.getElementById('vagas-disponiveis').textContent = 'Erro ao buscar o número de vagas.';
+    }
+}

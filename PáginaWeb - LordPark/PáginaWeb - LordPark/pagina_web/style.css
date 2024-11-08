@@ -136,3 +136,23 @@ tbody tr:hover {
 .logoff-button:hover {
     background-color: #444; 
 }
+/* Estilo para o container de Vagas Disponíveis */
+#vagas-disponiveis-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Mensagem de atualização de vagas */
+#vagas-disponiveis-message {
+    color: #28a745;
+    font-size: 18px;
+    margin-top: 10px;
+}

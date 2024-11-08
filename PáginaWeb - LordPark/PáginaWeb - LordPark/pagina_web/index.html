@@ -43,6 +43,12 @@
     <div id="user-container" style="display:none;">
         <button class="logoff-button" id="logoff-button-user">Logoff</button>
         <h2>Controle de Notebooks - Usuário</h2>
+        
+        <!-- Exibir vagas disponíveis -->
+        <div id="vagas-disponiveis-container">
+            <h3>Vagas Disponíveis:</h3>
+            <p id="vagas-disponiveis"></p>
+        </div>
 
         <!-- Seleção de carro para reserva -->
         <div id="car-selection">
@@ -50,6 +56,7 @@
             <select id="car-select"></select>
             <button id="reserve-button">Reservar</button>
             <p id="reserve-message" style="color:green; display:none;">Reserva realizada com sucesso!</p>
+            <p id="reserve-error" style="color:red; display:none;">Este carro já está reservado!</p>
         </div>
 
         <table class="table" align="center">
@@ -66,7 +73,7 @@
             </tbody>
         </table>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
 </html>
