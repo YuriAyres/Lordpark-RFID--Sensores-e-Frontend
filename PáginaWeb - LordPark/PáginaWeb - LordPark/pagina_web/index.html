@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Notebooks</title>
+    <title>LordPark</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body onload="carregarVagasDisponiveis()">
     <!-- Container de Login -->
     <div id="login-container">
         <h2>Login</h2>
@@ -23,7 +23,7 @@
     <!-- Container do Administrador -->
     <div id="admin-container" style="display:none;">
         <button class="logoff-button" id="logoff-button">Logoff</button>
-        <h2>Controle de Notebooks - Administrador</h2>
+        <h2 class="titulo">LordPark- Administrador</h2>
         <table class="table" align="center">
             <thead>
                 <tr>
@@ -42,7 +42,7 @@
     <!-- Container do Usuário Padrão -->
     <div id="user-container" style="display:none;">
         <button class="logoff-button" id="logoff-button-user">Logoff</button>
-        <h2>Controle de Notebooks - Usuário</h2>
+        <h2 class="titulo">LordPark- Usuário</h2>
         
         <!-- Exibir vagas disponíveis -->
         <div id="vagas-disponiveis-container">
