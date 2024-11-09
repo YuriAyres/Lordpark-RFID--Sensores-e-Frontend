@@ -1,7 +1,7 @@
 import serial
 import requests
 
-port = '/dev/ttyUSB0'
+port = '/dev/ttyACM0'
 baudrate = 9600
 URL_API = "http://10.1.24.62:5000"
 
@@ -26,6 +26,5 @@ with serial.Serial(port, baudrate, timeout=1) as ser:
                     print(f"Erro de conexão com a API: {e}")
             except ValueError:
                 print("Erro ao converter para inteiro.")
-
 
             
