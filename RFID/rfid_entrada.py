@@ -121,7 +121,7 @@ def processar_entrada(tag):
                 data_hora_entrada = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 enviar_mensagem_rabbitmq(placa, data_hora_entrada)
                 
-                response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag})
+                response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag, 'tempo': data_hora_entrada})
                 if response.status_code == 200:
                     print("Veículo registrado com sucesso na entrada.")
                 else:

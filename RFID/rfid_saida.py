@@ -106,20 +106,40 @@ def ler_tag(cs_pin, leitor):
 
     return None
 
+# Função para calcular o valor
+def calcular_valor(tempo_em_horas):
+    if tempo_em_horas <= 2:
+        return 7  # Valor fixo até 2 horas
+    else:
+        horas_extras = tempo_em_horas - 2
+        return 7 + horas_extras * 1  # R$1,00 para cada hora extra
+
+
 def processar_saida(tag):
     response = requests.get(f"{URL_API}/carros/{tag}")
     if response.status_code == 200:
         carro = response.json()
         placa = carro.get('placa')
+        tempo = carro.get('tempo')
+
         if placa:
             buzzer_sucesso(BUZZER_SAIDA, LED_VERDE_SAIDA)  # Sucesso na saída
             abrir_cancela(servoSaida)  # Abre a cancela de saída
 
             # Enviar dados para RabbitMQ
-            data_hora_entrada = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            enviar_mensagem_rabbitmq(placa, data_hora_entrada)
+            data_hora_saida_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            enviar_mensagem_rabbitmq(placa, data_hora_saida_str)
+
+            # Calculando a diferença em horas
+            data_hora_entrada = datetime.datetime.strptime(tempo, '%Y-%m-%d %H:%M:%S')
+            data_hora_saida = datetime.datetime.strptime(data_hora_saida_str, '%Y-%m-%d %H:%M:%S')
+            diferenca_tempo = data_hora_saida - data_hora_entrada
+            horas_totais = diferenca_tempo.total_seconds() / 3600
+
+            # Calculando o valor a pagar
+            valor = calcular_valor(horas_totais)
             
-            response = requests.post(f"{URL_API}/sair", json={'carro_id': tag})
+            response = requests.post(f"{URL_API}/sair", json={'carro_id': tag, 'valor': valor})
             if response.status_code == 200:
                 print("Saída registrada com sucesso.")
             else:
