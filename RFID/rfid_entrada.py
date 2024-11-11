@@ -11,7 +11,7 @@ import datetime
 GPIO.setmode(GPIO.BOARD)
 BUZZER_ENTRADA = 13
 CS_ENTRADA = 24  
-SERVO_ENTRADA_PIN = 32 
+SERVO_ENTRADA_PIN = 12 
 LED_VERMELHO_ENTRADA = 16  
 LED_VERDE_ENTRADA = 18
 
@@ -23,8 +23,20 @@ GPIO.setup(LED_VERDE_ENTRADA, GPIO.OUT)
 
 # Configuração do PWM para os servos
 servoEntrada = GPIO.PWM(SERVO_ENTRADA_PIN, 50)  # Frequência de 50Hz
-servoEntrada.start(0)  # Inicializa em 0 graus
 
+def angle_to_percent (angle) :
+    if angle > 180 or angle < 0 :
+        return False
+
+    start = 4
+    end = 12.5
+    ratio = (end - start)/180 #Calcul ratio from angle to percent
+
+    angle_as_percent = angle * ratio
+
+    return start + angle_as_percent
+
+servoEntrada.start(angle_to_percent(0))  # Inicializa em 0 graus
 leitorRFID_entrada = SimpleMFRC522()
 
 # URL da API
@@ -59,9 +71,9 @@ def buzzer_sucesso(buzzer, ledvermelho, ledverde):
 
 # Função para abrir e fechar a cancela
 def abrir_cancela(servo):
-    servo.ChangeDutyCycle(7)  # Ajuste para abrir (aproximadamente 90 graus)
+    servo.ChangeDutyCycle(angle_to_percent(90))  # Ajuste para abrir (aproximadamente 90 graus)
     sleep(5)  # Aguarda 5 segundos para fechar
-    servo.ChangeDutyCycle(0)  # Para o PWM (cancela fecha)
+    servo.ChangeDutyCycle(angle_to_percent(0))  # Para o PWM (cancela fecha)
     sleep(1)  # Aguarda um segundo antes de permitir o próximo movimento
 
 # Função para finalizar o programa
