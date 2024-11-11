@@ -3,10 +3,7 @@ const int TRIG_PINS[] = {3, 4, 5};
 const int ECHO_PINS[] = {6, 7, 8};
 const int LED_VERDE_PINS[] = {9, 10, 11};
 const int LED_VERMELHO_PINS[] = {12, 13, A0};
-const int DISTANCIA_THRESHOLD = 30; // Limite para detecção de presença
-
-bool estadosSensores[TOTAL_SENSORES] = {false, false, false}; // Array para armazenar o estado de cada sensor
-int sensoresAtivos = 0; // Contador de sensores detectando presença
+const int DISTANCIA_THRESHOLD = 10; // Limite para detecção de presença
 
 void setup() {
   Serial.begin(9600);
@@ -30,11 +27,11 @@ long medirDistancia(int trigPin, int echoPin) {
 
 void controlarLEDs(int indiceSensor, bool presencaDetectada) {
   if (presencaDetectada) {
-    digitalWrite(LED_VERDE_PINS[indiceSensor], HIGH);
-    digitalWrite(LED_VERMELHO_PINS[indiceSensor], LOW);
-  } else {
     digitalWrite(LED_VERDE_PINS[indiceSensor], LOW);
     digitalWrite(LED_VERMELHO_PINS[indiceSensor], HIGH);
+  } else {
+    digitalWrite(LED_VERDE_PINS[indiceSensor], HIGH);
+    digitalWrite(LED_VERMELHO_PINS[indiceSensor], LOW);
   }
 }
 
@@ -44,12 +41,9 @@ void enviarDadosParaPython(int sensoresAtivos) {
 }
 
 
-
-
 void loop() {
-  int sensoresAtivosAnterior = sensoresAtivos; // Guarda o valor anterior
-
-  sensoresAtivos = 0; // Reseta o contador de sensores ativos para calcular novamente
+ 
+  int sensoresAtivos = 0; // Reseta o contador de sensores ativos para calcular novamente
 
   for (int i = 0; i < TOTAL_SENSORES; i++) {
     long distancia = medirDistancia(TRIG_PINS[i], ECHO_PINS[i]);
@@ -60,22 +54,14 @@ void loop() {
     Serial.println(" cm");
 
     bool presencaDetectada = (distancia < DISTANCIA_THRESHOLD);
-    if (presencaDetectada && !estadosSensores[i]) {
-      // Se o sensor detectar presença e não estava ativo, atualiza
-      estadosSensores[i] = true;
+    if (presencaDetectada) {
       sensoresAtivos++;
-    } else if (!presencaDetectada && estadosSensores[i]) {
-      // Se o sensor não detectar mais presença e estava ativo, atualiza
-      estadosSensores[i] = false;
-      sensoresAtivos--;
     }
 
     controlarLEDs(i, presencaDetectada);
   }
 
-  if (sensoresAtivos != sensoresAtivosAnterior) {
   enviarDadosParaPython(sensoresAtivos);
-}
 
   delay(5000); // Atraso antes da próxima leitura
 }

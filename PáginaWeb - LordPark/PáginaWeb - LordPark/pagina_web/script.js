@@ -23,6 +23,30 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('login-container').style.display = 'block';
     }
 });
+async function carregarCarrosAdmin() {
+    try {
+        const response = await fetch(`http://${ipApi}:5000/carros`);
+        if (!response.ok) {
+            throw new Error('Erro ao buscar todos os carros');
+        }
+        const carros = await response.json();
+        const tabela = document.querySelector('#admin-container .table tbody');
+        tabela.innerHTML = '';
+
+        carros.forEach(carro => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${carro.placa}</td>
+                <td>${carro.nome}</td>
+                <td>${carro.status}</td>
+                <td>${carro.reserva}</td>
+            `;
+            tabela.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar todos os carros:', error);
+    }}
+        
 
 // Lógica de autenticação ao enviar o formulário de login
 document.getElementById('login-form').addEventListener('submit', function(event) {
@@ -130,3 +154,24 @@ async function reservarCarro() {
 
 // Adiciona o evento ao botão de reserva
 document.getElementById('reserve-button').addEventListener('click', reservarCarro);
+
+async function carregarVagasDisponiveis() {
+    try {
+        const response = await fetch(`http://${ipApi}:5000/vagas`);
+        if (!response.ok) {
+            throw new Error('Erro ao buscar o número de vagas disponíveis');
+        }
+        const data = await response.json();
+        const vagas = data.sensores_inativos;
+        document.getElementById('vagas-disponiveis').textContent = vagas
+            ? `Existem ${vagas} vagas disponíveis.`
+            : 'Nenhuma vaga disponível.';
+    } catch (error) {
+        console.error('Erro ao carregar vagas:', error);
+        document.getElementById('vagas-disponiveis').textContent = 'Erro ao buscar o número de vagas.';
+    }
+}
+
+
+// Chamando a função carregarVagasDisponiveis a cada 5 segundos
+setInterval(carregarVagasDisponiveis, 5000);

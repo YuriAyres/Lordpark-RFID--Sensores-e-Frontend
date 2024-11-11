@@ -41,9 +41,11 @@ leitorRFID_entrada = SimpleMFRC522()
 
 # URL da API
 URL_API = "http://10.1.24.62:5000"
+URL_RABBIT = "amqps://uxtpvazt:ug2EvD1w4EuMnAlH2yuDT9E35gwnPU8M@prawn.rmq.cloudamqp.com/uxtpvazt"
 
 def enviar_mensagem_rabbitmq(placa, data_hora_entrada):
-    connection = pika.BlockingConnection(pika.ConnectionParameters('10.1.24.62'))
+    URL=pika.URLParameters(URL_RABBIT)
+    connection = pika.BlockingConnection(URL)
     channel = connection.channel()
     channel.queue_declare(queue='estacionamento')
 
