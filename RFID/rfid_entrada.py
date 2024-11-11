@@ -112,16 +112,18 @@ def processar_entrada(tag):
         carro = response.json()
         placa = carro.get('placa')
         reserva = carro.get('reserva')
+        status = carro.get('status')
         if placa:
             if reserva == 'reservado':
-                buzzer_sucesso(BUZZER_ENTRADA, LED_VERDE_ENTRADA)  # Sucesso na entrada
-                abrir_cancela(servoEntrada)  # Abre a cancela de entrada
+                if status != 'estacionado': 
+                    buzzer_sucesso(BUZZER_ENTRADA, LED_VERDE_ENTRADA)  # Sucesso na entrada
+                    abrir_cancela(servoEntrada)  # Abre a cancela de entrada
 
-                 # Enviar dados para RabbitMQ
-                data_hora_entrada = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                enviar_mensagem_rabbitmq(placa, data_hora_entrada)
-                
-                response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag, 'tempo': data_hora_entrada})
+                    # Enviar dados para RabbitMQ
+                    data_hora_entrada = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    enviar_mensagem_rabbitmq(placa, data_hora_entrada)
+                    
+                    response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag, 'tempo': data_hora_entrada})
                 if response.status_code == 200:
                     print("Veículo registrado com sucesso na entrada.")
                 else:
