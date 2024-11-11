@@ -1,6 +1,6 @@
 // ip_teste = 192.168.18.31
 // ip_atitus = 10.1.24.62
-ipApi = "10.1.24.62";
+ipApi = "192.168.18.31";
 
 // Verifica se o usuário está logado ao carregar a página
 document.addEventListener('DOMContentLoaded', function() {
@@ -102,6 +102,9 @@ async function carregarCarrosUsuario() {
         const carSelect = document.getElementById('car-select');
         carSelect.innerHTML = ''; // Limpa as opções anteriores
 
+        // Variável para somar os valores dos carros do usuário
+        let valorTotal = 0;
+
         carros.forEach(carro => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -109,6 +112,8 @@ async function carregarCarrosUsuario() {
                 <td>${carro.modelo}</td>
                 <td>${carro.status}</td>
                 <td>${carro.reserva}</td>
+                <td>${carro.tempo ?? ''}</td>
+                <td>R$: ${parseFloat(carro.valor).toFixed(2) ?? '0.00'}</td>
             `;
             tabela.appendChild(row);
 
@@ -117,6 +122,17 @@ async function carregarCarrosUsuario() {
             option.value = carro.placa;
             option.textContent = carro.placa;
             carSelect.appendChild(option);
+
+            // Adiciona o valor do carro ao total, se existir
+            if (carro.valor) {
+                valorTotal += parseFloat(carro.valor);
+            }
+
+        // Armazena o valor total no localStorage para uso em outras funções
+        localStorage.setItem('valorTotal', valorTotal.toFixed(2));
+
+        // Chama carregarValor para atualizar o valor total na tela
+        carregarValor();
         });
     } catch (error) {
         console.error('Erro ao carregar carros do usuário:', error);
@@ -172,6 +188,59 @@ async function carregarVagasDisponiveis() {
     }
 }
 
+// Função para enviar a solicitação de pagamento
+async function pagar() {
+    const nome = localStorage.getItem('username');
+    try {
+        const response = await fetch(`http://${ipApi}:5000/pagar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ nome }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao realizar pagamento');
+        }
+        
+        // Exibe mensagem de sucesso
+        document.getElementById('pagamento-message').style.display = 'block';
+
+        // Oculta a mensagem após alguns segundos
+        setTimeout(() => {
+            document.getElementById('pagamento-message').style.display = 'none';
+        }, 3000);
+
+    } catch (error) {
+        console.error('Erro ao realizar pagamento:', error);
+    }
+}
+
+// Adiciona o evento ao botão de pagamento
+document.getElementById('pagamento-button').addEventListener('click', pagar);
+
+async function carregarValor() {
+    // Recupera o valor total do localStorage e exibe na página
+    const valorTotal = localStorage.getItem('valorTotal');
+    document.getElementById('valor').textContent = `Valor total: R$: ${valorTotal}`;
+}
+
 
 // Chamando a função carregarVagasDisponiveis a cada 5 segundos
 setInterval(carregarVagasDisponiveis, 5000);
+
+// Atualiza os carros a cada 5 segundos, mas apenas se o usuário estiver logado
+setInterval(() => {
+    if (localStorage.getItem('loggedIn') === 'true') {
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        // Se for admin, chama a função de carros admin
+        if (isAdmin) {
+            carregarCarrosAdmin();
+        } else {
+            // Se não for admin, chama a função de carros do usuário
+            carregarCarrosUsuario();
+        }
+    }
+}, 5000);

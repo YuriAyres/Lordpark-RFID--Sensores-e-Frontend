@@ -107,7 +107,6 @@ thead th {
     font-size: 18px;
     color: black; 
     border: 1px solid #ddd; 
-    width: 25%; 
 }
 
 tbody td {
@@ -162,4 +161,25 @@ tbody tr:hover {
     color: #28a745;
     font-size: 18px;
     margin-top: 10px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+    width: 15%;
+    background-color: #ccc;
+    padding: 10px;
+    border-radius: 10px;
+    align-items: center;
+}
+
+.texto {
+    text-align: center;
+    font-size: 18px;
+    color: black; 
+}
+
+.botao {
+    width: 50px;
 }
