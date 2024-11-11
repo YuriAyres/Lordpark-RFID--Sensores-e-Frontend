@@ -115,6 +115,7 @@ def processar_entrada(tag):
         status = carro.get('status')
         if placa:
             if reserva == 'reservado':
+                print(status)
                 if status != 'estacionado': 
                     buzzer_sucesso(BUZZER_ENTRADA, LED_VERDE_ENTRADA)  # Sucesso na entrada
                     abrir_cancela(servoEntrada)  # Abre a cancela de entrada
@@ -124,10 +125,13 @@ def processar_entrada(tag):
                     enviar_mensagem_rabbitmq(placa, data_hora_entrada)
                     
                     response = requests.post(f"{URL_API}/estacionar", json={'carro_id': tag, 'tempo': data_hora_entrada})
-                if response.status_code == 200:
-                    print("Veículo registrado com sucesso na entrada.")
+                    if response.status_code == 200:
+                        print("Veículo registrado com sucesso na entrada.")
+                    else:
+                        print("Erro ao registrar entrada.")
+                        buzzer_erro(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA)
                 else:
-                    print("Erro ao registrar entrada.")
+                    print("Carro já está no estacionamento.")
                     buzzer_erro(BUZZER_ENTRADA, LED_VERMELHO_ENTRADA)
             else:
                 print("Erro ao registrar entrada, veículo não tem reserva.")
