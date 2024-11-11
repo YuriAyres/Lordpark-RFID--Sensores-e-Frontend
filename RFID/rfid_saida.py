@@ -62,15 +62,17 @@ def tocar_buzzer(frequencia, duracao, buzzer):
     sleep(duracao)
     p.stop()
 
-def buzzer_erro(buzzer, ledvermelho, ledverde):
+def buzzer_erro(buzzer, ledvermelho):
     tocar_buzzer(200, 0.5, buzzer)
     GPIO.output(ledvermelho, GPIO.HIGH)  # Liga LED vermelho
-    GPIO.output(ledverde, GPIO.LOW)      # Desliga LED verde
+    sleep(2)  # Aguarda 2 segundos
+    GPIO.output(ledvermelho, GPIO.LOW)  # Desliga LED vermelho após 2 segundos
 
-def buzzer_sucesso(buzzer, ledvermelho, ledverde):
+def buzzer_sucesso(buzzer, ledverde):
     tocar_buzzer(1000, 0.5, buzzer)
-    GPIO.output(ledvermelho, GPIO.LOW)   # Desliga LED vermelho
     GPIO.output(ledverde, GPIO.HIGH)     # Liga LED verde
+    sleep(2)  # Aguarda 2 segundos
+    GPIO.output(ledverde, GPIO.LOW)  # Desliga LED verde após 2 segundos
 
 # Função para abrir e fechar a cancela
 def abrir_cancela(servo):
@@ -110,7 +112,7 @@ def processar_saida(tag):
         carro = response.json()
         placa = carro.get('placa')
         if placa:
-            buzzer_sucesso(BUZZER_SAIDA, LED_VERMELHO_SAIDA, LED_VERDE_SAIDA)  # Sucesso na saída
+            buzzer_sucesso(BUZZER_SAIDA, LED_VERDE_SAIDA)  # Sucesso na saída
             abrir_cancela(servoSaida)  # Abre a cancela de saída
 
             # Enviar dados para RabbitMQ
@@ -122,13 +124,13 @@ def processar_saida(tag):
                 print("Saída registrada com sucesso.")
             else:
                 print("Erro ao registrar saída.")
-                buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA, LED_VERDE_SAIDA)
+                buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA)
         else:
             print("ID não reconhecido.")
-            buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA, LED_VERDE_SAIDA)
+            buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA)
     else:
         print("Erro ao buscar dados do carro.")
-        buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA, LED_VERDE_SAIDA)
+        buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA)
 
 # Loop principal
 try:
