@@ -121,29 +121,34 @@ def processar_saida(tag):
         carro = response.json()
         placa = carro.get('placa')
         tempo = carro.get('tempo')
+        status = carro.get('status')
 
         if placa:
-            buzzer_sucesso(BUZZER_SAIDA, LED_VERDE_SAIDA)  # Sucesso na saída
-            abrir_cancela(servoSaida)  # Abre a cancela de saída
+            if status == 'estacionado': 
+                buzzer_sucesso(BUZZER_SAIDA, LED_VERDE_SAIDA)  # Sucesso na saída
+                abrir_cancela(servoSaida)  # Abre a cancela de saída
 
-            # Enviar dados para RabbitMQ
-            data_hora_saida_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            enviar_mensagem_rabbitmq(placa, data_hora_saida_str)
+                # Enviar dados para RabbitMQ
+                data_hora_saida_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                enviar_mensagem_rabbitmq(placa, data_hora_saida_str)
 
-            # Calculando a diferença em horas
-            data_hora_entrada = datetime.datetime.strptime(tempo, '%Y-%m-%d %H:%M:%S')
-            data_hora_saida = datetime.datetime.strptime(data_hora_saida_str, '%Y-%m-%d %H:%M:%S')
-            diferenca_tempo = data_hora_saida - data_hora_entrada
-            horas_totais = diferenca_tempo.total_seconds() / 3600
+                # Calculando a diferença em horas
+                data_hora_entrada = datetime.datetime.strptime(tempo, '%Y-%m-%d %H:%M:%S')
+                data_hora_saida = datetime.datetime.strptime(data_hora_saida_str, '%Y-%m-%d %H:%M:%S')
+                diferenca_tempo = data_hora_saida - data_hora_entrada
+                horas_totais = diferenca_tempo.total_seconds() / 3600
 
-            # Calculando o valor a pagar
-            valor = calcular_valor(horas_totais)
-            
-            response = requests.post(f"{URL_API}/sair", json={'carro_id': tag, 'valor': valor})
-            if response.status_code == 200:
-                print("Saída registrada com sucesso.")
+                # Calculando o valor a pagar
+                valor = calcular_valor(horas_totais)
+                
+                response = requests.post(f"{URL_API}/sair", json={'carro_id': tag, 'valor': valor})
+                if response.status_code == 200:
+                    print("Saída registrada com sucesso.")
+                else:
+                    print("Erro ao registrar saída.")
+                    buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA)
             else:
-                print("Erro ao registrar saída.")
+                print("Carro não está no estacionamento!")
                 buzzer_erro(BUZZER_SAIDA, LED_VERMELHO_SAIDA)
         else:
             print("ID não reconhecido.")
