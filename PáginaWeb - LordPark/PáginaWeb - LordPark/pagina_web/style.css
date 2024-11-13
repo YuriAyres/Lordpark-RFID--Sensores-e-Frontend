@@ -1,14 +1,38 @@
 /* Estilos gerais */
 body {
+    background-color: #02483e;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: white; 
+    /* background-image: url('Foto_Fundo.jpg'); */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 500vh;
+}
+.faixa-preta {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 15%; /* Define a largura da faixa */
+    height: 100vh; /* Faz a faixa ocupar toda a altura da página */
+    background-color: #fcfef5;
+    z-index: -1; /* Garante que a faixa fique acima do conteúdo */
+}
+
+.titulo-principal {
+    font-size: 48px; /* Tamanho grande para chamar atenção */
+    color: #f7f1ef; /* Cor vibrante */
+    text-align: center;
+    margin-top: 50px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Efeito de sombra */
+    font-family: 'Arial Black', Arial, sans-serif;
 }
 
 /* Estilos da página de login */
 #login-container {
-    background-color: #333; 
+    background-color: #fcfef5; 
     width: 350px;
     padding: 20px;
     border-radius: 10px;
@@ -20,14 +44,15 @@ body {
 }
 
 .titulo {
-    color: black;
+    color: white;
     text-align: center;
     margin-bottom: 20px;
+    margin-top: -200;
 
 }
 
 h2 {
-    color: white;
+    color: black;
     text-align: center;
     margin-bottom: 20px;
 }
@@ -39,7 +64,7 @@ h2 {
 }
 
 label {
-    color: white;
+    color: black;
     font-weight: bold;
     margin-bottom: 5px;
     align-self: flex-start;
@@ -52,7 +77,7 @@ input[type="text"], input[type="password"] {
     border: none;
     border-radius: 10px;
     background-color: #ccc; 
-    color: black;
+    color: black;;
     font-size: 16px;
 }
 
@@ -61,14 +86,14 @@ button[type="submit"] {
     padding: 10px;
     border: none;
     border-radius: 10px;
-    background-color: #555;
+    background-color: #67bfe7;
     color: white;
     font-size: 16px;
     cursor: pointer;
 }
 
 button[type="submit"]:hover {
-    background-color: #444;
+    background-color: #affbff;
 }
 
 #login-error {
@@ -80,7 +105,7 @@ button[type="submit"]:hover {
 /* Estilos da página de controle de notebooks */
 #main-container {
     display: block;
-    text-align: center; 
+    text-align: center;
 }
 
 #main-container h2 {
@@ -127,33 +152,31 @@ tbody tr:hover {
 
 /* Estilo do botão de logoff */
 .logoff-button {
-    position: absolute;
+    position: fixed;
     top: 20px; 
     right: 20px; 
     padding: 10px;
     border: none;
     border-radius: 50%; 
-    background-color: #555; 
+    background-color: #3f483f; 
     color: white; 
     cursor: pointer;
     transition: background-color 0.3s; 
 }
 
 .logoff-button:hover {
-    background-color: #444; 
+    background-color: #3f483f; 
 }
 /* Estilo para o container de Vagas Disponíveis */
 #vagas-disponiveis-container {
     margin-top: 20px;
     margin-bottom: 20px;
     font-size: 20px;
-    color: #333;
+    color: white;
     text-align: center;
     font-weight: bold;
-    background-color: #f0f0f0;
     padding: 15px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Mensagem de atualização de vagas */
@@ -168,7 +191,7 @@ tbody tr:hover {
     flex-direction: column;
     margin: 15px;
     width: 15%;
-    background-color: #ccc;
+    background-color: #fcfef5;
     padding: 10px;
     border-radius: 10px;
     align-items: center;
@@ -177,9 +200,16 @@ tbody tr:hover {
 .texto {
     text-align: center;
     font-size: 18px;
-    color: black; 
+    color: black;
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
 }
 
 .botao {
     width: 50px;
+}
+.Absolute{
+    position: fixed;
+    width: 1000px;
+    margin-top: -300px;
 }

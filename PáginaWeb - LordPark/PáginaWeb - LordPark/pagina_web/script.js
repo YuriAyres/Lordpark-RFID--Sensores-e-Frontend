@@ -1,6 +1,6 @@
 // ip_teste = 192.168.18.31
 // ip_atitus = 10.1.24.62
-ipApi = "192.168.18.31";
+ipApi = "10.1.24.62";
 
 // Verifica se o usuário está logado ao carregar a página
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (localStorage.getItem('loggedIn') === 'true') {
         document.getElementById('login-container').style.display = 'none';
-
         if (isAdmin) {
             document.getElementById('admin-container').style.display = 'block';
             carregarCarrosAdmin();
@@ -21,9 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     } else {
         document.getElementById('login-container').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        document.getElementById('faixa-preta').style.display = 'none';
+        
     }
 });
 async function carregarCarrosAdmin() {
+    document.body.style.overflow = 'auto';
+    document.getElementById('faixa-preta').style.display = 'block';
     try {
         const response = await fetch(`http://${ipApi}:5000/carros`);
         if (!response.ok) {
@@ -84,11 +88,15 @@ document.querySelectorAll("#logoff-button, #logoff-button-user").forEach(button 
         document.getElementById("admin-container").style.display = "none";
         document.getElementById("user-container").style.display = "none";
         document.getElementById("login-container").style.display = "block";
+        document.body.style.overflow = 'hidden';
+        document.getElementById('faixa-preta').style.display = 'none';
     });
 });
 
 // Função para carregar os carros do usuário logado e preencher o select
 async function carregarCarrosUsuario() {
+    document.body.style.overflow = 'auto';
+    document.getElementById('faixa-preta').style.display = 'block';
     const username = localStorage.getItem('username');
     try {
         const response = await fetch(`http://${ipApi}:5000/login/${username}`);
@@ -105,6 +113,8 @@ async function carregarCarrosUsuario() {
         // Variável para somar os valores dos carros do usuário
         let valorTotal = 0;
 
+        document.getElementById('Usuario').innerHTML =(`${username}`)
+
         carros.forEach(carro => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -113,7 +123,8 @@ async function carregarCarrosUsuario() {
                 <td>${carro.status}</td>
                 <td>${carro.reserva}</td>
                 <td>${carro.tempo ?? ''}</td>
-                <td>R$: ${parseFloat(carro.valor).toFixed(2) ?? '0.00'}</td>
+               <td>R$: ${!isNaN(parseFloat(carro.valor)) ? parseFloat(carro.valor).toFixed(2) : '0.00'}</td>
+
             `;
             tabela.appendChild(row);
 
