@@ -10,10 +10,17 @@
         <div id="faixa-preta" class="faixa-preta"></div>
 
 <body onload="carregarVagasDisponiveis()">
-    <h1 class="titulo-principal">LordPark</h1>
+    <h1  id="titulo-superior" class="titulo-superior">LordPark</h1>
+    <h1 class="titulo-principal" id="titulo-principal">LordPark</h1>
+         <!-- Exibir vagas disponíveis -->
+           <div id="vagas-disponiveis-container">
+              <h3>Vagas Disponíveis:</h3>
+              <p id="vagas-disponiveis"></p>
+            </div>
     <!-- Container de Login -->
     <div id="login-container">
         <h2>Login</h2>
+        <p>Digite os seus dados de acesso no campo abaixo.</p>
         <form id="login-form">
             <label for="username">Usuário:</label>
             <input type="text" id="username" required>
@@ -27,7 +34,7 @@
     <!-- Container do Administrador -->
     <div id="admin-container" style="display:none;">
         <button class="logoff-button" id="logoff-button">Logoff</button>
-        <h2 class="titulo">LordPark- Administrador</h2>
+        <h2 class="titulo"> Administrador - </h2>
         <table class="table" align="center">
             <thead>
                 <tr>
@@ -48,13 +55,7 @@
         <div>
             <div class="Nomeusuário">
                 <button class="logoff-button" id="logoff-button-user">Logoff</button>
-                <h2 class="titulo"id ="Usuario">LordPark - Usuário</h2>
-            </div>
-
-            <!-- Exibir vagas disponíveis -->
-            <div id="vagas-disponiveis-container">
-                <h3>Vagas Disponíveis:</h3>
-                <p id="vagas-disponiveis"></p>
+                <h2 class="titulo"id ="Usuario">Usuário</h2>
             </div>
         </div>
         <div>
@@ -92,7 +93,12 @@
             </div>
         </div>
     </div>
-
+    <div class="wave-container">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+        <div class="wave wave4"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 

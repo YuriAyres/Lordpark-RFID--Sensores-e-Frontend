@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('login-container').style.display = 'block';
         document.body.style.overflow = 'hidden';
         document.getElementById('faixa-preta').style.display = 'none';
-        
+        document.getElementById('titulo-superior').style.display = 'none';
+        document.getElementById('titulo-principal').style.display = 'block';
+        document.getElementById('vagas-disponiveis-container').style.display = 'none';
     }
 });
 async function carregarCarrosAdmin() {
@@ -72,6 +74,8 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         localStorage.setItem('username', username);  // Armazena o username para filtrar carros
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('user-container').style.display = 'block';
+        document.getElementById('titulo-principal').style.display = 'none';
+        document.getElementById('vagas-disponiveis-container').style.display = 'block';
         carregarCarrosUsuario();
     } else {
         document.getElementById('login-error').style.display = 'block';
@@ -90,13 +94,18 @@ document.querySelectorAll("#logoff-button, #logoff-button-user").forEach(button 
         document.getElementById("login-container").style.display = "block";
         document.body.style.overflow = 'hidden';
         document.getElementById('faixa-preta').style.display = 'none';
+        document.getElementById('titulo-superior').style.display = 'none';
+        document.getElementById('titulo-principal').style.display = 'block';
+        document.getElementById('vagas-disponiveis-container').style.display = 'none';
     });
 });
 
 // Função para carregar os carros do usuário logado e preencher o select
 async function carregarCarrosUsuario() {
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = 'auto'; 
     document.getElementById('faixa-preta').style.display = 'block';
+    document.getElementById('titulo-superior').style.display = 'block';
+    document.getElementById('titulo-principal').style.display = 'none';
     const username = localStorage.getItem('username');
     try {
         const response = await fetch(`http://${ipApi}:5000/login/${username}`);

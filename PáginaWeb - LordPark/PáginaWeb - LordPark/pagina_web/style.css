@@ -11,15 +11,16 @@ body {
     height: 500vh;
 }
 .faixa-preta {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 15%; /* Define a largura da faixa */
-    height: 100vh; /* Faz a faixa ocupar toda a altura da página */
-    background-color: #fcfef5;
-    z-index: -1; /* Garante que a faixa fique acima do conteúdo */
-}
-
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 10%; /* Reduz a largura da faixa */
+        height: 50vh; /* Mantém a altura ocupando toda a página */
+        background-color: #ccc;
+        z-index: -1; /* Garante que a faixa fique abaixo do conteúdo */
+        border-radius: 0 20px 20px 0; /* Arredonda as bordas direitas */
+    }
+    
 .titulo-principal {
     font-size: 48px; /* Tamanho grande para chamar atenção */
     color: #f7f1ef; /* Cor vibrante */
@@ -30,8 +31,20 @@ body {
     font-family: 'Arial Black', Arial, sans-serif;
 }
 
+.titulo-superior {
+    position: absolute;
+    top: 10px;
+    left: 40px;
+    font-size: 1.5em;
+    color: #004d40; /* Ajuste a cor conforme o design desejado */
+    margin: 0;
+    padding: 0;
+    font-family: Lobster, sans-serif;
+}
+
 /* Estilos da página de login */
 #login-container {
+    font-family: American Typewriter, serif;
     background-color: #fcfef5; 
     width: 350px;
     padding: 20px;
@@ -86,14 +99,14 @@ button[type="submit"] {
     padding: 10px;
     border: none;
     border-radius: 10px;
-    background-color: #67bfe7;
+    background-color: #add6bc;
     color: white;
     font-size: 16px;
     cursor: pointer;
 }
 
 button[type="submit"]:hover {
-    background-color: #affbff;
+    background-color: #c3d297;
 }
 
 #login-error {
@@ -139,7 +152,7 @@ tbody td {
     text-align: center;
     font-size: 16px;
     color: black; 
-    border: 1px solid #ddd; 
+    border: 1px solid #ddd;
 }
 
 tbody tr:nth-child(even) {
@@ -169,14 +182,17 @@ tbody tr:hover {
 }
 /* Estilo para o container de Vagas Disponíveis */
 #vagas-disponiveis-container {
+    position: relative;
     margin-top: 20px;
     margin-bottom: 20px;
-    font-size: 20px;
+    font-size: 10px;
     color: white;
     text-align: center;
     font-weight: bold;
     padding: 15px;
     border-radius: 10px;
+    top: 40px;
+    left: -840px;
 }
 
 /* Mensagem de atualização de vagas */
@@ -191,7 +207,6 @@ tbody tr:hover {
     flex-direction: column;
     margin: 15px;
     width: 15%;
-    background-color: #fcfef5;
     padding: 10px;
     border-radius: 10px;
     align-items: center;
@@ -211,5 +226,62 @@ tbody tr:hover {
 .Absolute{
     position: fixed;
     width: 1000px;
-    margin-top: -300px;
+    margin-top: -100px;
+}
+.password {
+    color: white;
+}
+/* Fundo das waves */
+.wave-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -2; /* Certifique-se de que as waves fiquem atrás do conteúdo */
+    overflow: hidden;
+}
+
+.wave {
+    position: absolute;
+    width: 150%;
+    height: 40vh;
+    border-radius: 50%;
+    transform: translate(-25%, 0);
+}
+
+.wave1 {
+    background: #004d40;
+    top: 0;
+    animation: moveWave 5s infinite ease-in-out;
+}
+
+.wave2 {
+    background: #00695c;
+    top: 20vh;
+    animation: moveWave 6s infinite ease-in-out reverse;
+}
+
+.wave3 {
+    background: #00796b;
+    top: 40vh;
+    animation: moveWave 7s infinite ease-in-out;
+}
+
+.wave4 {
+    background: #009688;
+    top: 60vh;
+    animation: moveWave 8s infinite ease-in-out reverse;
+}
+
+@keyframes moveWave {
+    0% {
+        transform: translateX(-25%) rotate(0deg);
+    }
+    50% {
+        transform: translateX(-20%) rotate(1deg);
+    }
+    100% {
+        transform: translateX(-25%) rotate(0deg);
+    }
 }
