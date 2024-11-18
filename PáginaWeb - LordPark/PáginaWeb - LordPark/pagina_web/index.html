@@ -7,16 +7,17 @@
     <title>LordPark</title>
     <link rel="stylesheet" href="style.css">
 </head>
-        <div id="faixa-preta" class="faixa-preta"></div>
+<div id="faixa-preta" class="faixa-preta">
+    <h1 id="titulo-superior" class="titulo-superior">LordPark</h1>
+    <!-- Exibir vagas disponíveis -->
+    <div id="vagas-disponiveis-container">
+        <h3>Vagas Disponíveis:</h3>
+        <p id="vagas-disponiveis"></p>
+    </div>
+</div>
 
 <body onload="carregarVagasDisponiveis()">
-    <h1  id="titulo-superior" class="titulo-superior">LordPark</h1>
     <h1 class="titulo-principal" id="titulo-principal">LordPark</h1>
-         <!-- Exibir vagas disponíveis -->
-           <div id="vagas-disponiveis-container">
-              <h3>Vagas Disponíveis:</h3>
-              <p id="vagas-disponiveis"></p>
-            </div>
     <!-- Container de Login -->
     <div id="login-container">
         <h2>Login</h2>
@@ -34,7 +35,7 @@
     <!-- Container do Administrador -->
     <div id="admin-container" style="display:none;">
         <button class="logoff-button" id="logoff-button">Logoff</button>
-        <h2 class="titulo"> Administrador - </h2>
+        <h2 class="titulo">Administrador</h2>
         <table class="table" align="center">
             <thead>
                 <tr>
@@ -55,7 +56,7 @@
         <div>
             <div class="Nomeusuário">
                 <button class="logoff-button" id="logoff-button-user">Logoff</button>
-                <h2 class="titulo"id ="Usuario">Usuário</h2>
+                <h2 class="titulo" id="Usuario">Usuário</h2>
             </div>
         </div>
         <div>
@@ -77,15 +78,15 @@
             <div class="Absolute">
                 <!-- Seleção de carro para reserva -->
                 <div id="car-selection" class="container">
-                    <p class="texto">Selecione uma placa para reservar:</p>
-                    <select id="car-select"></select>
+                    <h3 class="texto">Selecione uma placa para reservar:</h3>
+                    <select id="car-select" class="select-dropdown"></select>
                     <button id="reserve-button">Reservar</button>
                     <p id="reserve-message" style="color:green; display:none;">Reserva realizada com sucesso!</p>
                     <p id="reserve-error" style="color:red; display:none;">Este carro já está reservado!</p>
                 </div>
 
                 <div id="pagamento" class="container">
-                    <p id="valor" class="texto"></p>
+                    <h3 id="valor" class="texto"></h3>
                     <button id="pagamento-button" class="botao">Pagar</button>
                     <p id="pagamento-message" style="color:green; display:none;">Pagamento realizado com sucesso!</p>
                     <p id="pagamento-error" style="color:red; display:none;">Não há valor a ser pago!</p>

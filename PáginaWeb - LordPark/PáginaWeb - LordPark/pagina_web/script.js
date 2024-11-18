@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 async function carregarCarrosAdmin() {
+    document.getElementById('titulo-superior').style.display = 'block';
+    document.getElementById('titulo-principal').style.display = 'none';
     document.body.style.overflow = 'auto';
     document.getElementById('faixa-preta').style.display = 'block';
     try {
@@ -66,6 +68,8 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         localStorage.setItem('isAdmin', 'true');
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('admin-container').style.display = 'block';
+        document.getElementById('login-error').style.display = 'none';
+        document.getElementById('vagas-disponiveis-container').style.display = 'block';
         carregarCarrosAdmin();
     } else if ((username === 'Cristiano ronaldo' && password === 'senha123') || 
                (username === 'Mauricio Hugo' && password === 'senha456')) {
@@ -76,6 +80,7 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         document.getElementById('user-container').style.display = 'block';
         document.getElementById('titulo-principal').style.display = 'none';
         document.getElementById('vagas-disponiveis-container').style.display = 'block';
+        document.getElementById('login-error').style.display = 'none';
         carregarCarrosUsuario();
     } else {
         document.getElementById('login-error').style.display = 'block';
@@ -185,6 +190,11 @@ async function reservarCarro() {
 
     } catch (error) {
         console.error('Erro ao reservar carro:', error);
+        document.getElementById('reserve-error').style.display = 'block';
+
+        setTimeout(() => {
+            document.getElementById('reserve-error').style.display = 'none';
+        }, 3000);
     }
 }
 
@@ -205,6 +215,7 @@ async function carregarVagasDisponiveis() {
     } catch (error) {
         console.error('Erro ao carregar vagas:', error);
         document.getElementById('vagas-disponiveis').textContent = 'Erro ao buscar o número de vagas.';
+        document.getElementById('vagas-disponiveis').style = 'color: red';
     }
 }
 
@@ -234,6 +245,12 @@ async function pagar() {
 
     } catch (error) {
         console.error('Erro ao realizar pagamento:', error);
+        document.getElementById('pagamento-error').style.display = 'block';
+
+        // Oculta a mensagem após alguns segundos
+        setTimeout(() => {
+            document.getElementById('pagamento-error').style.display = 'none';
+        }, 3000);
     }
 }
 
