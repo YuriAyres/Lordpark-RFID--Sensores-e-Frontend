@@ -122,6 +122,7 @@ def processar_saida(tag):
         placa = carro.get('placa')
         tempo = carro.get('tempo')
         status = carro.get('status')
+        valor = carro.get('valor')
 
         if placa:
             if status == 'estacionado': 
@@ -139,7 +140,7 @@ def processar_saida(tag):
                 horas_totais = diferenca_tempo.total_seconds() / 3600
 
                 # Calculando o valor a pagar
-                valor = calcular_valor(horas_totais)
+                valor = valor + calcular_valor(horas_totais)
                 
                 response = requests.post(f"{URL_API}/sair", json={'carro_id': tag, 'valor': valor})
                 if response.status_code == 200:
